@@ -1,5 +1,6 @@
 package ru.itis.websocket.handler;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -14,6 +15,7 @@ import ru.itis.websocket.jwt.JwtHelper;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -42,13 +44,15 @@ public class AuthHandshakeHandler implements HandshakeHandler {
             return false;
         }
 
-/*        String token = jwtHelper.resolveToken(request.getServletRequest());
+/*
+        String token = jwtHelper.resolveToken(request.getServletRequest());
         if (jwtHelper.validateToken(token)) {
             return handshakeHandler.doHandshake(serverHttpRequest, serverHttpResponse, webSocketHandler, map);
         } else {
             serverHttpResponse.setStatusCode(HttpStatus.FORBIDDEN);
             return false;
-        }*/
+        }
+*/
 
     }
 }

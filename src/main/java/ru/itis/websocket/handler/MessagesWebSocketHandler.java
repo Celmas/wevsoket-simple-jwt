@@ -32,6 +32,7 @@ public class MessagesWebSocketHandler extends TextWebSocketHandler {
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
         HttpHeaders headers = session.getHandshakeHeaders();
         String messageAsString = (String) message.getPayload();
+        System.err.println(messageAsString);
         MessageDto body = objectMapper.readValue(messageAsString, MessageDto.class);
         body.setFrom(jwtHelper.getUsername(body.getFrom()));
 

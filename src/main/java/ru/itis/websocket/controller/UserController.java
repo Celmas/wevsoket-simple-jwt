@@ -1,7 +1,7 @@
 package ru.itis.websocket.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,16 +19,18 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("api/login")
+    @CrossOrigin
+    @PostMapping("login")
     public ResponseEntity<TokenDto> login(@RequestBody UserDto userDto) {
-        return ResponseEntity.ok(TokenDto.from(userService.login(userDto.getUsername(), userDto.getPassword())));
+        return ResponseEntity.ok(TokenDto.from(userService.login(userDto.getLogin(), userDto.getPassword())));
     }
 
-    @PostMapping("api/register")
+    @CrossOrigin
+    @PostMapping("register")
     public ResponseEntity<TokenDto> register(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(TokenDto.from(userService.register(User
                 .builder()
-                .username(userDto.getUsername())
+                .username(userDto.getLogin())
                 .password(userDto.getPassword())
                 .build())));
     }
