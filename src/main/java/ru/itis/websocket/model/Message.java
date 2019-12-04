@@ -1,27 +1,25 @@
 package ru.itis.websocket.model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
+import java.sql.Timestamp;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user_acc")
-public class User {
+@Table(name = "chat")
+public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany
-    List<Message> messages;
-
-    private String username;
-    private String password;
+    @ManyToOne
+    private User user;
+    private String message;
+    private Timestamp timestamp;
 }

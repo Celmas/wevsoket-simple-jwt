@@ -1,39 +1,34 @@
 import React, {Component} from 'react'
+import SockJsClient from 'react-stomp';
+import {TalkBox} from "react-talk";
+import Fetch from "json-fetch";
 
 class ChatComponent extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
+            clientRef: null,
             ws: null,
             messages: [],
-            text: ''
+            text: '',
+            clientConnected: null
         }
         this.handleChange = this.handleChange.bind(this)
-        this.sendClicked = this.sendClicked.bind(this)
     }
 
-    componentDidMount() {
-        this.connect();
+    onMessageReceive = (msg, topic) => {
+        this.setState(prevState => ({
+            messages: [...prevState.messages, msg]
+        }));
     }
 
-    connect() {
-        let client = new WebSocket('ws://localhost:8080/chat');
-        client.onopen = () => {
-            this.setState({ws: client})
-            client.send(JSON.stringify({
-                "from": localStorage.getItem('AUTH'),
-                "text": "Hello!"
-            }))
-        };
-        client.onmessage = (message) => {
-            console.log(JSON.parse(message.data));
-            this.setState({messages: this.state.messages.concat(JSON.parse((message.data)))})
-        };
-        client.onerror = () => {
-            console.log('Auth error');
-        }
-
+    componentWillMount() {
+        Fetch("/history", {
+            method: "GET"
+        }).then((response) => {
+            this.setState({messages: response.body});
+        });
     }
 
 
@@ -45,13 +40,13 @@ class ChatComponent extends Component {
         )
     }
 
-    sendClicked() {
-        let message = {
-            "from": localStorage.getItem('AUTH'),
-            "text": this.state.text
-        };
-        this.state.ws.send(JSON.stringify(message));
-        this.setState({text: ''})
+    sendMessage = (msg, selfMsg) => {
+        try {
+            this.clientRef.sendMessage("/app/hello", JSON.stringify(selfMsg));
+            return true;
+        } catch (e) {
+            return false;
+        }
     }
 
 
@@ -61,27 +56,20 @@ class ChatComponent extends Component {
             <div className="container">
                 <h3>Chat</h3>
                 <div className="container">
-                    Text: <input type="text" name="text" value={this.state.text} onChange={this.handleChange}/>
-                    <button className="btn btn-success" onClick={this.sendClicked}>Send</button>
-                    <table className="table">
-                        <thead>
-                        <tr>
-                            <th>Login</th>
-                            <th>Message</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {
-                            this.state.messages.map(
-                                message =>
-                                    <tr key={message.from}>
-                                        <td>{message.from}</td>
-                                        <td>{message.text}</td>
-                                    </tr>
-                            )
-                        }
-                        </tbody>
-                    </table>
+                    <TalkBox topic="SockJs Test" currentUserId={localStorage.getItem("AUTH")}
+                             currentUser={localStorage.getItem("authenticatedUser")} messages={this.state.messages}
+                             onSendMessage={this.sendMessage} connected={this.state.clientConnected}/>
+                    <SockJsClient url={"http://localhost:8080/messages"} topics={["/topic/chat"]}
+                                  onMessage={this.onMessageReceive} ref={(client) => {
+                        this.clientRef = client
+                    }}
+                                  onConnect={() => {
+                                      this.setState({clientConnected: true});
+                                  }}
+                                  onDisconnect={() => {
+                                      this.setState({clientConnected: false})
+                                  }}
+                                  debug={true}/>
                 </div>
             </div>
         )
