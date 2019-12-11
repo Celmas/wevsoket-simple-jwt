@@ -23,11 +23,13 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<MessageDto> getHistory() {
-        return repository.findAllByOrderByTimestampAsc().stream().map(message -> MessageDto.builder()
+    public List<MessageDto> getHistory(String room) {
+        return repository.findAllByRoomOrderByCreatedAtAsc(room).stream().map(message -> MessageDto.builder()
                 .author(message.getUser().getUsername())
                 .message(message.getMessage())
                 .timestamp(message.getTimestamp())
+                .createdAt(message.getCreatedAt())
+                .room(message.getRoom())
                 .build()).collect(Collectors.toList());
     }
 
@@ -38,6 +40,8 @@ public class ChatServiceImpl implements ChatService {
                 .message(messageDto.getMessage())
                 .user(user)
                 .timestamp(messageDto.getTimestamp())
+                .createdAt(messageDto.getCreatedAt())
+                .room(messageDto.getRoom())
                 .build());
         return Optional.of(message);
     }

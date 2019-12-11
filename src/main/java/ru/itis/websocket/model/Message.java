@@ -21,5 +21,7 @@ public class Message {
     @ManyToOne
     private User user;
     private String message;
-    private Timestamp timestamp;
+    private String room;
+    private String timestamp;
+    private Timestamp createdAt;
 }

@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 public class MessageDto {
     private String author;
     private String message;
-    private Timestamp timestamp;
-
+    private String timestamp;
+    private Timestamp createdAt;
+    private String room;
 }
